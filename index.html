@@ -5,24 +5,35 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Nitya Shringar Store</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Yatra+One&family=Hind:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Yatra+One&family=Rozha+One&family=Cinzel:wght@500;700&family=Playfair+Display:wght@500;700&family=Hind:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* Layout idea: slim announcement bar, sticky header, compact hero with a size finder, category tabs, filter bar, product grid, cart drawer. */
-:root{
+/* Five complete looks. The shopper or client picks one with the Design bar; each is a full single-theme palette. */
+:root,:root[data-skin="peacock"]{
   --bg:#f5f7f6; --surface:#ffffff; --ink:#14262b; --muted:#546a6e; --line:#d9e2e1;
   --brand:#0f5560; --brand-ink:#ffffff; --accent:#f0a202; --sale:#b3264f; --art-bg:#e8efee;
   --display:"Yatra One",Georgia,serif; --body:"Hind",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --r:10px;
+  --r:10px; --pillr:99px; color-scheme:light;
 }
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
-    --bg:#0d1a1d; --surface:#14262a; --ink:#eef3f2; --muted:#9db3b3; --line:#27403f;
-    --brand:#3aa6b3; --brand-ink:#04181b; --accent:#f0a202; --sale:#ff7a9a; --art-bg:#1b3236; color-scheme:dark;
-  }
+:root[data-skin="kesar"]{
+  --bg:#fdf1e0; --surface:#fffaf2; --ink:#3b1208; --muted:#7a5a4a; --line:#ecd3b6;
+  --brand:#8c1c13; --brand-ink:#ffffff; --accent:#e8890c; --sale:#c2410c; --art-bg:#f8e2c4;
+  --display:"Rozha One",Georgia,serif; --r:12px; --pillr:99px; color-scheme:light;
 }
-:root[data-theme="dark"]{
-  --bg:#0d1a1d; --surface:#14262a; --ink:#eef3f2; --muted:#9db3b3; --line:#27403f;
-  --brand:#3aa6b3; --brand-ink:#04181b; --accent:#f0a202; --sale:#ff7a9a; --art-bg:#1b3236; color-scheme:dark;
+:root[data-skin="royal"]{
+  --bg:#150e26; --surface:#20163a; --ink:#f4eee0; --muted:#b3a8cc; --line:#3a2c5e;
+  --brand:#d9a441; --brand-ink:#1a1100; --accent:#d9a441; --sale:#ff8fab; --art-bg:#2b1f4d;
+  --display:"Cinzel",Georgia,serif; --r:8px; --pillr:6px; color-scheme:dark;
+}
+:root[data-skin="minimal"]{
+  --bg:#ffffff; --surface:#ffffff; --ink:#111111; --muted:#6b6b6b; --line:#e4e4e4;
+  --brand:#111111; --brand-ink:#ffffff; --accent:#c8102e; --sale:#c8102e; --art-bg:#f3f3f3;
+  --display:"Playfair Display",Georgia,serif; --r:2px; --pillr:2px; color-scheme:light;
+}
+:root[data-skin="tulsi"]{
+  --bg:#f1f7ee; --surface:#ffffff; --ink:#1b2e1f; --muted:#58705c; --line:#d3e3cf;
+  --brand:#2d6a4f; --brand-ink:#ffffff; --accent:#e9a23b; --sale:#c44536; --art-bg:#e0eed9;
+  --display:"Playfair Display",Georgia,serif; --r:14px; --pillr:99px; color-scheme:light;
 }
 *{box-sizing:border-box}
 html,body{margin:0}
@@ -61,7 +72,7 @@ header.top{position:sticky;top:0;z-index:20;background:var(--surface);border-bot
 .result a{color:var(--brand);font-weight:600;cursor:pointer;text-decoration:underline}
 
 .tabs{display:flex;gap:8px;overflow-x:auto;padding:12px 0 6px;scrollbar-width:thin}
-.tab{white-space:nowrap;border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:7px 16px;font-weight:500}
+.tab{white-space:nowrap;border:1px solid var(--line);background:var(--surface);border-radius:var(--pillr);padding:7px 16px;font-weight:500}
 .tab[aria-pressed="true"]{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
 .tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 0 14px}
 .tools label{font-size:14px;color:var(--muted);display:flex;align-items:center;gap:6px}
@@ -86,7 +97,7 @@ header.top{position:sticky;top:0;z-index:20;background:var(--surface);border-bot
 .usp .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding-top:20px;padding-bottom:20px}
 .usp strong{display:block}
 .usp span{font-size:14px;color:var(--muted)}
-footer{padding:28px 0 40px;color:var(--muted);font-size:14px}
+footer{padding:28px 0 90px;color:var(--muted);font-size:14px}
 footer .wrap{display:grid;grid-template-columns:2fr 1fr 1fr;gap:24px}
 footer h3{font-family:var(--body);font-weight:600;font-size:15px;color:var(--ink);margin-bottom:6px}
 footer p{margin:0 0 4px}
@@ -125,6 +136,12 @@ footer p{margin:0 0 4px}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 a.btn{display:block;text-align:center;text-decoration:none}
 a.btn[aria-disabled="true"]{opacity:.5;pointer-events:none}
+
+.skins{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--surface);border-top:1px solid var(--line);display:flex;gap:8px;align-items:center;padding:8px 16px;overflow-x:auto}
+.skins > span{font-size:13px;color:var(--muted);white-space:nowrap;font-weight:600}
+.skins button{display:flex;align-items:center;gap:8px;white-space:nowrap;border:1px solid var(--line);background:var(--bg);border-radius:var(--pillr);padding:6px 12px;font-weight:600;font-size:14px}
+.skins button[aria-pressed="true"]{border-color:var(--brand);box-shadow:0 0 0 2px var(--brand) inset}
+.skins i{width:16px;height:16px;border-radius:50%;display:inline-block;border:1px solid rgba(0,0,0,.2)}
 
 @media (max-width:900px){
   .grid{grid-template-columns:repeat(3,1fr)}
@@ -210,9 +227,18 @@ a.btn[aria-disabled="true"]{opacity:.5;pointer-events:none}
   <div class="wrap">
     <div><h3>Nitya Shringar</h3><p>Dress sets, deities, ornaments, malas and chanting accessories. This is a prototype with sample products and prices.</p></div>
     <div><h3>Help</h3><p>Size guide</p><p>Delivery</p><p>Payment by UPI</p></div>
-    <div><h3>Contact</h3><p>WhatsApp: +91 XXXXX XXXXX</p><p>Address: to be added</p><p>GSTIN: to be added</p></div>
+    <div><h3>Contact</h3><p>WhatsApp: +91 89370 09190</p><p>Address: to be added</p><p>GSTIN: to be added</p></div>
   </div>
 </footer>
+
+<nav class="skins" id="skins" aria-label="Choose a design">
+  <span>Design</span>
+  <button type="button" data-skin="peacock" aria-pressed="true"><i style="background:linear-gradient(135deg,#0f5560 50%,#f0a202 50%)"></i>Peacock</button>
+  <button type="button" data-skin="kesar" aria-pressed="false"><i style="background:linear-gradient(135deg,#8c1c13 50%,#e8890c 50%)"></i>Kesar</button>
+  <button type="button" data-skin="royal" aria-pressed="false"><i style="background:linear-gradient(135deg,#20163a 50%,#d9a441 50%)"></i>Royal</button>
+  <button type="button" data-skin="minimal" aria-pressed="false"><i style="background:linear-gradient(135deg,#111 50%,#c8102e 50%)"></i>Minimal</button>
+  <button type="button" data-skin="tulsi" aria-pressed="false"><i style="background:linear-gradient(135deg,#2d6a4f 50%,#e9a23b 50%)"></i>Tulsi</button>
+</nav>
 
 <!-- Quick view -->
 <div class="overlay" id="quick" role="dialog" aria-modal="true" aria-labelledby="qName">
@@ -256,7 +282,7 @@ a.btn[aria-disabled="true"]{opacity:.5;pointer-events:none}
 
 <script>
 /* ---- Editable settings and sample data ---- */
-var WHATSAPP = "919999999999";   // replace with the client's WhatsApp number (country code, no +)
+var WHATSAPP = "918937009190";   // replace with the client's WhatsApp number (country code, no +)
 var UPI_ID = "to-be-added@upi";  // replace with the client's UPI ID
 
 /* Dress sizes are in inches, from 2 to 20. */
@@ -474,6 +500,26 @@ $("copyOrder").addEventListener("click", function(){
   }catch(err){ note.textContent = "Copy was blocked. Use the WhatsApp button instead."; }
 });
 document.addEventListener("keydown", function(e){ if(e.key==="Escape") closeAll(); });
+
+/* ---- Design picker. Links: .../Nityashingar/#kesar, #royal, #minimal, #tulsi, #peacock ---- */
+var SKINS = ["peacock","kesar","royal","minimal","tulsi"];
+function setSkin(name){
+  if(SKINS.indexOf(name)<0) name = "peacock";
+  document.documentElement.setAttribute("data-skin", name);
+  Array.prototype.forEach.call(document.querySelectorAll("#skins button"), function(b){ b.setAttribute("aria-pressed", String(b.dataset.skin===name)); });
+  try{ localStorage.setItem("nitya-skin", name); }catch(e){}
+  try{ history.replaceState(null, "", "#" + name); }catch(e){}
+}
+function startSkin(){
+  var h = (location.hash||"").replace("#",""), saved = "";
+  try{ saved = localStorage.getItem("nitya-skin") || ""; }catch(e){}
+  setSkin(SKINS.indexOf(h)>=0 ? h : saved);
+}
+document.getElementById("skins").addEventListener("click", function(e){
+  var b = e.target.closest("[data-skin]"); if(b) setSkin(b.dataset.skin);
+});
+window.addEventListener("hashchange", function(){ var h = location.hash.replace("#",""); if(SKINS.indexOf(h)>=0) setSkin(h); });
+startSkin();
 
 buildFilters(); renderGrid(); renderCart();
 </script>
