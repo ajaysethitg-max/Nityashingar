@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nitya Shringar Store</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Yatra+One&family=Hind:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: slim announcement bar, sticky header, compact hero with a size finder, category tabs, filter bar, product grid, cart drawer. */
+:root{
+  --bg:#f5f7f6; --surface:#ffffff; --ink:#14262b; --muted:#546a6e; --line:#d9e2e1;
+  --brand:#0f5560; --brand-ink:#ffffff; --accent:#f0a202; --sale:#b3264f; --art-bg:#e8efee;
+  --display:"Yatra One",Georgia,serif; --body:"Hind",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r:10px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0d1a1d; --surface:#14262a; --ink:#eef3f2; --muted:#9db3b3; --line:#27403f;
+    --brand:#3aa6b3; --brand-ink:#04181b; --accent:#f0a202; --sale:#ff7a9a; --art-bg:#1b3236; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0d1a1d; --surface:#14262a; --ink:#eef3f2; --muted:#9db3b3; --line:#27403f;
+  --brand:#3aa6b3; --brand-ink:#04181b; --accent:#f0a202; --sale:#ff7a9a; --art-bg:#1b3236; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;text-wrap:balance;line-height:1.2}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1160px;margin:0 auto;padding:0 16px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+.announce{background:var(--brand);color:var(--brand-ink);font-size:14px;text-align:center;padding:6px 16px}
+header.top{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:12px;padding:10px 16px}
+.logo{font-family:var(--display);font-size:22px;color:var(--brand);text-decoration:none;line-height:1}
+.logo small{display:block;font-family:var(--body);font-size:12px;color:var(--muted);letter-spacing:.04em}
+.pill{font-size:11px;font-weight:600;background:var(--accent);color:#2a1d00;border-radius:99px;padding:2px 8px;margin-left:6px;vertical-align:middle}
+.grow{flex:1}
+.search{max-width:360px;width:100%}
+.search input{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:var(--r);background:var(--bg)}
+.cart-btn{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:8px 12px;font-weight:600}
+.cart-btn b{background:var(--brand);color:var(--brand-ink);border-radius:99px;min-width:22px;height:22px;display:grid;place-items:center;font-size:13px;padding:0 6px}
+
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:24px;padding:28px 16px 12px;align-items:center}
+.hero h1{font-size:clamp(28px,4.4vw,44px);color:var(--brand)}
+.hero p{color:var(--muted);max-width:52ch;margin:10px 0 0}
+.finder{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.finder h2{font-size:20px;margin-bottom:4px}
+.finder p{font-size:14px;margin:0 0 10px}
+.finder .row{display:flex;gap:8px}
+.finder input{flex:1;min-width:0;padding:9px 12px;border:1px solid var(--line);border-radius:var(--r);background:var(--bg)}
+.btn{background:var(--brand);color:var(--brand-ink);border:0;border-radius:var(--r);padding:10px 16px;font-weight:600}
+.btn.alt{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.result{margin-top:10px;font-size:15px;min-height:24px}
+.result a{color:var(--brand);font-weight:600;cursor:pointer;text-decoration:underline}
+
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:12px 0 6px;scrollbar-width:thin}
+.tab{white-space:nowrap;border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:7px 16px;font-weight:500}
+.tab[aria-pressed="true"]{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+.tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 0 14px}
+.tools label{font-size:14px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.tools select{padding:7px 10px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+.count{margin-left:auto;color:var(--muted);font-size:14px}
+
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding-bottom:40px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column}
+.card .art{background:var(--art-bg);aspect-ratio:1/1;display:grid;place-items:center;position:relative;border:0;width:100%;padding:12px}
+.card .art svg{width:80%;height:auto}
+.tag{position:absolute;top:8px;left:8px;background:var(--sale);color:#fff;font-size:12px;font-weight:600;border-radius:6px;padding:1px 8px}
+.card .info{padding:10px 12px 12px;display:flex;flex-direction:column;gap:2px;flex:1}
+.card h3{font-family:var(--body);font-weight:600;font-size:16px;line-height:1.3}
+.meta{font-size:13px;color:var(--muted)}
+.price{margin-top:auto;padding-top:6px;display:flex;align-items:baseline;gap:6px;font-variant-numeric:tabular-nums}
+.price b{font-size:18px}
+.price span{color:var(--muted);font-size:13px}
+.card .btn{margin-top:8px;width:100%;padding:8px}
+.empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:40px 0}
+
+.usp{background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.usp .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding-top:20px;padding-bottom:20px}
+.usp strong{display:block}
+.usp span{font-size:14px;color:var(--muted)}
+footer{padding:28px 0 40px;color:var(--muted);font-size:14px}
+footer .wrap{display:grid;grid-template-columns:2fr 1fr 1fr;gap:24px}
+footer h3{font-family:var(--body);font-weight:600;font-size:15px;color:var(--ink);margin-bottom:6px}
+footer p{margin:0 0 4px}
+
+.overlay{position:fixed;inset:0;background:rgba(5,15,18,.55);z-index:40;display:none}
+.overlay.open{display:block}
+.modal{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(760px,calc(100% - 32px));max-height:calc(100% - 32px);overflow:auto;background:var(--surface);border-radius:14px;display:grid;grid-template-columns:1fr 1fr}
+.modal .art{background:var(--art-bg);display:grid;place-items:center;padding:20px}
+.modal .art svg{width:85%;height:auto}
+.modal .body{padding:20px;display:flex;flex-direction:column;gap:10px}
+.modal h2{font-size:24px}
+.x{position:absolute;top:8px;right:8px;border:0;background:var(--surface);border-radius:99px;width:36px;height:36px;font-size:20px;line-height:1}
+.sizes{display:flex;flex-wrap:wrap;gap:6px}
+.sz{min-width:44px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);font-weight:600}
+.sz[aria-pressed="true"]{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+.sz:disabled{opacity:.35;cursor:not-allowed}
+.qty{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:8px}
+.qty button{border:0;background:transparent;width:34px;height:34px;font-size:18px}
+.qty span{min-width:28px;text-align:center;font-variant-numeric:tabular-nums}
+.note{font-size:13px;color:var(--muted)}
+
+.drawer{position:absolute;right:0;top:0;bottom:0;width:min(420px,100%);background:var(--surface);display:flex;flex-direction:column}
+.drawer header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line)}
+.drawer h2{font-size:22px}
+.drawer .items{flex:1;overflow:auto;padding:8px 16px}
+.line{display:grid;grid-template-columns:56px 1fr auto;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);align-items:center}
+.line .thumb{background:var(--art-bg);border-radius:8px;display:grid;place-items:center;height:56px}
+.line .thumb svg{width:70%;height:56px}
+.line .t{font-weight:600;font-size:15px;line-height:1.3}
+.line .rm{border:0;background:transparent;color:var(--sale);font-size:13px;padding:0;text-decoration:underline}
+.drawer .foot{border-top:1px solid var(--line);padding:12px 16px;display:flex;flex-direction:column;gap:8px;max-height:60%;overflow:auto}
+.sum{display:flex;justify-content:space-between;font-variant-numeric:tabular-nums}
+.sum.total{font-weight:700;font-size:18px}
+.drawer input,.drawer textarea{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+.drawer textarea{resize:vertical;min-height:56px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+a.btn{display:block;text-align:center;text-decoration:none}
+a.btn[aria-disabled="true"]{opacity:.5;pointer-events:none}
+
+@media (max-width:900px){
+  .grid{grid-template-columns:repeat(3,1fr)}
+  .hero{grid-template-columns:1fr}
+  .usp .wrap{grid-template-columns:1fr 1fr}
+  footer .wrap{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  .grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  .modal{grid-template-columns:1fr}
+  .modal .art{padding:12px}
+  .modal .art svg{width:50%}
+  .search{display:none}
+  .count{margin-left:0;width:100%}
+}
+@media (prefers-reduced-motion:no-preference){
+  .card{transition:box-shadow .15s}
+  .card:hover{box-shadow:0 4px 18px rgba(0,0,0,.12)}
+}
+</style>
+</head>
+<body>
+
+<div class="announce">Pay by UPI &nbsp;·&nbsp; Delivery by our own team &nbsp;·&nbsp; Poshak sizes from 2 to 20 inches</div>
+
+<header class="top">
+  <div class="wrap bar">
+    <a class="logo" href="#top">Nitya Shringar<small>Poshak and shringar for your deities</small></a><span class="pill">Prototype</span>
+    <div class="grow"></div>
+    <div class="search"><label class="sr" for="q">Search products</label><input id="q" type="search" placeholder="Search poshak, mala, deity"></div>
+    <button class="cart-btn" id="openCart" type="button" aria-label="Open cart">Cart <b id="cartCount">0</b></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="wrap hero">
+    <div>
+      <h1>Poshak, deities and shringar for your home temple</h1>
+      <p>राधा-कृष्ण, हनुमान जी, दुर्गा माता, गणेश-लक्ष्मी जी के लिए पोशाक सेट। साथ में मूर्तियाँ, आभूषण, तुलसी माला, रुद्राक्ष माला, जाप बैग और जाप काउंटर।</p>
+    </div>
+    <div class="finder">
+      <h2>Find your size</h2>
+      <p>Measure your deity from the base to the top of the head, in inches.</p>
+      <div class="row">
+        <label class="sr" for="h">Deity height in inches</label>
+        <input id="h" type="number" inputmode="decimal" min="1" max="20" step="0.5" placeholder="Height in inches, e.g. 8">
+        <button class="btn" id="findBtn" type="button">Find size</button>
+      </div>
+      <div class="result" id="finderOut" aria-live="polite"></div>
+      <div class="note">We confirm the fit with you on WhatsApp before stitching.</div>
+    </div>
+  </section>
+
+  <section class="wrap" id="shop">
+    <div class="tabs" id="tabs" role="group" aria-label="Shop by category"></div>
+    <div class="tools">
+      <label for="fSize">Size
+        <select id="fSize"></select></label>
+      <label for="fMat">Material
+        <select id="fMat"></select></label>
+      <label for="fSort">Sort
+        <select id="fSort">
+          <option value="pop">Popular</option>
+          <option value="low">Price: low to high</option>
+          <option value="high">Price: high to low</option>
+        </select></label>
+      <span class="count" id="count" aria-live="polite"></span>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section class="usp">
+    <div class="wrap">
+      <div><strong>Sizes from 2 to 20 inches</strong><span>Dress sets for deities of every height.</span></div>
+      <div><strong>Pay by UPI</strong><span>Simple payment once your order is confirmed.</span></div>
+      <div><strong>Delivered by us</strong><span>Our own delivery. Charges are confirmed on WhatsApp.</span></div>
+      <div><strong>Order on WhatsApp</strong><span>Share your deity's photo and confirm the fit.</span></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div><h3>Nitya Shringar</h3><p>Dress sets, deities, ornaments, malas and chanting accessories. This is a prototype with sample products and prices.</p></div>
+    <div><h3>Help</h3><p>Size guide</p><p>Delivery</p><p>Payment by UPI</p></div>
+    <div><h3>Contact</h3><p>WhatsApp: +91 XXXXX XXXXX</p><p>Address: to be added</p><p>GSTIN: to be added</p></div>
+  </div>
+</footer>
+
+<!-- Quick view -->
+<div class="overlay" id="quick" role="dialog" aria-modal="true" aria-labelledby="qName">
+  <div class="modal" id="quickBox">
+    <button class="x" type="button" data-close aria-label="Close">×</button>
+    <div class="art" id="qArt"></div>
+    <div class="body">
+      <h2 id="qName"></h2>
+      <div class="meta" id="qMeta"></div>
+      <div class="price"><b id="qPrice"></b><span id="qPriceNote"></span></div>
+      <div id="qSizeBox"><div class="meta" style="margin-bottom:4px">Choose size (inches)</div><div class="sizes" id="qSizes"></div></div>
+      <div><div class="meta" style="margin-bottom:4px">Quantity</div>
+        <div class="qty"><button type="button" id="qMinus" aria-label="Decrease">−</button><span id="qQty">1</span><button type="button" id="qPlus" aria-label="Increase">+</button></div></div>
+      <button class="btn" type="button" id="qAdd">Add to cart</button>
+      <div class="note" id="qNote"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Cart -->
+<div class="overlay" id="cart" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+  <aside class="drawer">
+    <header><h2 id="cartTitle">Your cart</h2><button class="x" style="position:static" type="button" data-close aria-label="Close cart">×</button></header>
+    <div class="items" id="items"></div>
+    <div class="foot" id="foot">
+      <div class="sum"><span>Subtotal</span><span id="sSub"></span></div>
+      <div class="sum"><span>Delivery</span><span>Confirmed on WhatsApp</span></div>
+      <div class="sum total"><span>Total</span><span id="sTot"></span></div>
+      <label class="sr" for="cName">Your name</label><input id="cName" placeholder="Your name" autocomplete="name">
+      <div class="two">
+        <div><label class="sr" for="cPhone">Phone</label><input id="cPhone" placeholder="Phone number" inputmode="tel" autocomplete="tel"></div>
+        <div><label class="sr" for="cPin">Pincode</label><input id="cPin" placeholder="Pincode" inputmode="numeric"></div>
+      </div>
+      <label class="sr" for="cAddr">Delivery address</label><textarea id="cAddr" placeholder="Delivery address"></textarea>
+      <a class="btn" id="waLink" href="#" target="_blank" rel="noopener">Send order on WhatsApp</a>
+      <button class="btn alt" type="button" id="copyOrder">Copy order text</button>
+      <div class="note" id="copyNote">Payment is by UPI after we confirm your order. UPI ID: <span id="upiId"></span></div>
+    </div>
+  </aside>
+</div>
+
+<script>
+/* ---- Editable settings and sample data ---- */
+var WHATSAPP = "919999999999";   // replace with the client's WhatsApp number (country code, no +)
+var UPI_ID = "to-be-added@upi";  // replace with the client's UPI ID
+
+/* Dress sizes are in inches, from 2 to 20. */
+var SIZES = []; for(var i=2;i<=20;i++) SIZES.push(i);
+var CATS = ["All","Radha Krishna","Hanuman Set","Durga Set","Ganesh & Laxmi","Poshak by Size","Deities","Ornaments","Tulsi Mala","Rudraksh Mala","Chanting Bag & Counter"];
+
+/* Sized products: price = base + (size - min) * step. Single-size products have min = null.
+   All names, prices and materials below are samples. */
+var PRODUCTS = [
+ {id:1, name:"Radha Krishna Velvet Dress Set", cat:"Radha Krishna", kind:"dress", crown:"gold", mat:"Velvet", min:2, max:15, base:299, step:60, c1:"#1f3c88", c2:"#f0a202", pat:"border", tag:"Bestseller", pop:10},
+ {id:2, name:"Radha Krishna Zari Silk Set", cat:"Radha Krishna", kind:"dress", crown:"gold", mat:"Zari silk", min:3, max:15, base:449, step:70, c1:"#b3264f", c2:"#ffd166", pat:"dots", tag:"New", pop:8},
+ {id:3, name:"Hanuman Ji Saffron Set", cat:"Hanuman Set", kind:"dress", crown:"hanuman", mat:"Cotton", min:2, max:12, base:249, step:55, c1:"#f77f00", c2:"#7a2e00", pat:"plain", tag:"", pop:7},
+ {id:4, name:"Hanuman Ji Sindoor Velvet Set", cat:"Hanuman Set", kind:"dress", crown:"hanuman", mat:"Velvet", min:4, max:12, base:399, step:65, c1:"#d62828", c2:"#ffd166", pat:"border", tag:"", pop:5},
+ {id:5, name:"Durga Maa Red Chunri Set", cat:"Durga Set", kind:"dress", crown:"gold", mat:"Silk", min:2, max:15, base:349, step:65, c1:"#c1121f", c2:"#f0a202", pat:"border", tag:"Navratri", pop:8},
+ {id:6, name:"Durga Maa Gota Patti Set", cat:"Durga Set", kind:"dress", crown:"gold", mat:"Zari silk", min:4, max:15, base:549, step:80, c1:"#9d0208", c2:"#ffd166", pat:"dots", tag:"", pop:6},
+ {id:7, name:"Ganesh Ji and Laxmi Ji Set", cat:"Ganesh & Laxmi", kind:"dress", crown:"ganesh", mat:"Silk", min:2, max:15, base:399, step:60, c1:"#2d6a4f", c2:"#f0a202", pat:"border", tag:"Diwali", pop:9},
+ {id:8, name:"Laxmi Ji Lotus Pink Set", cat:"Ganesh & Laxmi", kind:"dress", crown:"gold", mat:"Velvet", min:2, max:15, base:349, step:60, c1:"#e5707e", c2:"#fff3b0", pat:"dots", tag:"", pop:6},
+ {id:9, name:"Everyday Cotton Poshak", cat:"Poshak by Size", kind:"dress", crown:"gold", mat:"Cotton", min:4, max:20, base:199, step:45, c1:"#f0b400", c2:"#8a4b00", pat:"dots", tag:"", pop:7},
+ {id:10, name:"Festival Velvet Poshak", cat:"Poshak by Size", kind:"dress", crown:"gold", mat:"Velvet", min:4, max:20, base:349, step:70, c1:"#5b2a86", c2:"#f6d365", pat:"border", tag:"Festival", pop:6},
+ {id:11, name:"Brass Deity Murti", cat:"Deities", kind:"murti", crown:"gold", mat:"Brass", min:null, base:599, c1:"#d9a441", c2:"#8a5a00", tag:"", pop:5},
+ {id:12, name:"Marble Deity Murti", cat:"Deities", kind:"murti", crown:"gold", mat:"Marble", min:null, base:1499, c1:"#eceff1", c2:"#90a4ae", tag:"", pop:4},
+ {id:13, name:"Pearl Ornament Set", cat:"Ornaments", kind:"ornament", mat:"Pearl", min:null, base:349, c1:"#f4efe6", c2:"#f0a202", tag:"", pop:5},
+ {id:14, name:"Tulsi Mala, 108 Beads", cat:"Tulsi Mala", kind:"mala", mat:"Tulsi wood", min:null, base:149, c1:"#6b4a2b", c2:"#2d6a4f", tag:"", pop:8},
+ {id:15, name:"Rudraksh Mala, 5 Mukhi", cat:"Rudraksh Mala", kind:"mala", mat:"Rudraksh", min:null, base:299, c1:"#8b5a2b", c2:"#3a2500", tag:"", pop:7},
+ {id:16, name:"Chanting Bag", cat:"Chanting Bag & Counter", kind:"bag", mat:"Cotton", min:null, base:199, c1:"#f77f00", c2:"#7a2e00", tag:"", pop:6},
+ {id:17, name:"Chanting Counter", cat:"Chanting Bag & Counter", kind:"counter", mat:"Plastic", min:null, base:99, c1:"#0f5560", c2:"#cfe8e4", tag:"", pop:4}
+];
+
+/* ---- Helpers ---- */
+function $(id){return document.getElementById(id)}
+function rupee(n){return "₹" + n.toLocaleString("en-IN")}
+function find(id){return PRODUCTS.filter(function(p){return p.id===id})[0]}
+function sized(p){return p.min!==null}
+function hasSize(p,s){return sized(p) && s>=p.min && s<=p.max}
+function priceFor(p,s){return sized(p) ? p.base + ((s===null?p.min:s)-p.min)*p.step : p.base}
+function topPrice(p){return sized(p) ? priceFor(p,p.max) : p.base}
+
+function art(p){
+  var o = "", i, t, x, y;
+  if(p.kind==="dress"){
+    var d = "";
+    if(p.pat==="dots"){for(var r=0;r<4;r++){for(var c=0;c<7;c++){d+='<circle cx="'+(26+c*11+(r%2)*5)+'" cy="'+(78+r*11)+'" r="1.8" fill="'+p.c2+'" opacity=".85"/>'}}}
+    if(p.pat==="border"){d='<path d="M18 124 Q60 136 102 124" fill="none" stroke="'+p.c2+'" stroke-width="5"/><path d="M26 108 Q60 118 94 108" fill="none" stroke="'+p.c2+'" stroke-width="2" stroke-dasharray="3 3"/>'}
+    var crown = p.crown==="hanuman" ? '<path d="M50 24 Q60 6 70 24Z" fill="#e0a52c"/>' : p.crown==="ganesh" ? '<path d="M48 26 L60 2 L72 26Z" fill="#e0a52c"/>' : '<path d="M52 24 L55 10 L60 18 L65 10 L68 24Z" fill="#e0a52c"/><circle cx="60" cy="9" r="2" fill="#e0a52c"/>';
+    o = '<path d="M44 54 Q60 48 76 54 L106 126 Q60 140 14 126Z" fill="'+p.c1+'"/>'+d+
+      '<path d="M46 52 Q60 46 74 52 L72 66 Q60 70 48 66Z" fill="'+p.c2+'" opacity=".9"/>'+
+      '<circle cx="60" cy="34" r="12" fill="#e0a52c"/><circle cx="55.5" cy="33" r="1.3" fill="#3a2500"/><circle cx="64.5" cy="33" r="1.3" fill="#3a2500"/>'+crown;
+  } else if(p.kind==="murti"){
+    o = '<rect x="30" y="118" width="60" height="14" rx="3" fill="'+p.c2+'"/><path d="M42 118 Q40 70 60 56 Q80 70 78 118Z" fill="'+p.c1+'" stroke="'+p.c2+'" stroke-width="2"/>'+
+      '<circle cx="60" cy="38" r="13" fill="'+p.c1+'" stroke="'+p.c2+'" stroke-width="2"/><path d="M50 26 L54 12 L60 20 L66 12 L70 26Z" fill="'+p.c1+'" stroke="'+p.c2+'" stroke-width="2"/>';
+  } else if(p.kind==="ornament"){
+    var pts = [];
+    for(i=0;i<=10;i++){ x=15+i*9; y=26+56*(1-Math.pow((i-5)/5,2)); pts.push([x,y]); }
+    o = '<path d="M'+pts.map(function(q){return q[0]+" "+q[1]}).join(" L")+'" fill="none" stroke="'+p.c2+'" stroke-width="1.5"/>';
+    pts.forEach(function(q){ o += '<circle cx="'+q[0]+'" cy="'+q[1]+'" r="4.5" fill="'+p.c1+'" stroke="'+p.c2+'" stroke-width="1.5"/>'; });
+    o += '<path d="M60 88 L52 104 L60 120 L68 104Z" fill="'+p.c2+'"/>';
+  } else if(p.kind==="mala"){
+    for(i=0;i<18;i++){ t=i/18*Math.PI*2; x=60+38*Math.sin(t); y=58-38*Math.cos(t); o += '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="6.5" fill="'+p.c1+'" stroke="'+p.c2+'" stroke-width="1.5"/>'; }
+    o += '<circle cx="60" cy="102" r="7.5" fill="'+p.c1+'" stroke="'+p.c2+'" stroke-width="1.5"/><circle cx="60" cy="116" r="6" fill="'+p.c1+'" stroke="'+p.c2+'" stroke-width="1.5"/><path d="M60 122 L54 138 M60 122 L60 140 M60 122 L66 138" stroke="'+p.c2+'" stroke-width="2"/>';
+  } else if(p.kind==="bag"){
+    o = '<path d="M40 52 Q60 2 80 52" fill="none" stroke="'+p.c2+'" stroke-width="4"/><path d="M28 52 Q60 42 92 52 L102 120 Q60 134 18 120Z" fill="'+p.c1+'"/><path d="M34 62 Q60 82 86 62" fill="none" stroke="'+p.c2+'" stroke-width="3"/><circle cx="60" cy="96" r="8" fill="'+p.c2+'" opacity=".8"/>';
+  } else if(p.kind==="counter"){
+    o = '<circle cx="60" cy="84" r="34" fill="none" stroke="'+p.c1+'" stroke-width="12"/><rect x="40" y="26" width="40" height="26" rx="5" fill="'+p.c1+'"/><rect x="45" y="31" width="30" height="16" rx="2" fill="'+p.c2+'"/><text x="60" y="44" text-anchor="middle" font-size="12" font-weight="700" fill="#14262b" font-family="sans-serif">108</text>';
+  }
+  return '<svg viewBox="0 0 120 140" role="img" aria-label="'+p.name+'">'+o+'</svg>';
+}
+
+/* ---- State ---- */
+var state = {cat:"All", size:"all", mat:"all", sort:"pop", q:""};
+var cart = [];
+try{ cart = JSON.parse(localStorage.getItem("nitya-cart")||"[]") || []; }catch(e){ cart = []; }
+cart = cart.filter(function(c){ return find(c.id); });
+function saveCart(){ try{ localStorage.setItem("nitya-cart", JSON.stringify(cart)); }catch(e){} }
+
+/* ---- Filters and grid ---- */
+function buildFilters(){
+  $("tabs").innerHTML = CATS.map(function(d){return '<button class="tab" type="button" data-cat="'+d.replace(/&/g,"&amp;")+'" aria-pressed="'+(d===state.cat)+'">'+d.replace(/&/g,"&amp;")+'</button>'}).join("");
+  $("fSize").innerHTML = '<option value="all">All sizes</option>' + SIZES.map(function(s){return '<option value="'+s+'">'+s+' inch</option>'}).join("");
+  var mats = []; PRODUCTS.forEach(function(p){ if(mats.indexOf(p.mat)<0) mats.push(p.mat); });
+  $("fMat").innerHTML = '<option value="all">All materials</option>' + mats.map(function(f){return '<option>'+f+'</option>'}).join("");
+}
+function renderGrid(){
+  var q = state.q.toLowerCase();
+  var list = PRODUCTS.filter(function(p){
+    if(state.cat!=="All" && p.cat!==state.cat) return false;
+    if(state.size!=="all" && !hasSize(p,+state.size)) return false;
+    if(state.mat!=="all" && p.mat!==state.mat) return false;
+    if(q && (p.name+" "+p.mat+" "+p.cat).toLowerCase().indexOf(q)<0) return false;
+    return true;
+  });
+  list.sort(function(a,b){ return state.sort==="low" ? a.base-b.base : state.sort==="high" ? b.base-a.base : b.pop-a.pop; });
+  $("count").textContent = list.length + (list.length===1?" product":" products");
+  $("grid").innerHTML = list.length ? list.map(function(p){
+    return '<article class="card"><button class="art" type="button" data-open="'+p.id+'" aria-label="View '+p.name+'">'+(p.tag?'<span class="tag">'+p.tag+'</span>':'')+art(p)+'</button>'+
+      '<div class="info"><h3>'+p.name+'</h3><div class="meta">'+p.cat+' · '+p.mat+'</div>'+
+      '<div class="meta">'+(sized(p)?('Sizes '+p.min+' to '+p.max+' inch'):'Single size')+'</div>'+
+      '<div class="price"><b>'+rupee(p.base)+'</b>'+(sized(p)?'<span>onwards</span>':'')+'</div>'+
+      '<button class="btn" type="button" data-open="'+p.id+'">'+(sized(p)?'Choose size':'View')+'</button></div></article>';
+  }).join("") : '<div class="empty">No products match these filters. Try another size or category.</div>';
+}
+
+/* ---- Size finder ---- */
+function findSize(){
+  var h = parseFloat($("h").value), out = $("finderOut");
+  if(!(h>0)){ out.textContent = "Enter the deity height in inches."; return; }
+  var s = Math.min(20, Math.max(2, Math.round(h)));
+  out.innerHTML = 'Look for <b>size '+s+' inch</b>. <a data-size="'+s+'" tabindex="0" role="button">Show size '+s+' products</a>';
+}
+function applySize(n){
+  state.size = String(n); $("fSize").value = state.size; renderGrid();
+  $("shop").scrollIntoView({behavior:"smooth"});
+}
+
+/* ---- Quick view ---- */
+var qp = null, qSize = null, qQty = 1;
+function openQuick(id){
+  qp = find(id); qSize = null; qQty = 1;
+  $("qArt").innerHTML = art(qp); $("qName").textContent = qp.name;
+  $("qMeta").textContent = qp.cat + " · " + qp.mat;
+  $("qQty").textContent = 1;
+  if(sized(qp)){
+    $("qSizeBox").style.display = "block";
+    $("qPrice").textContent = rupee(qp.base); $("qPriceNote").textContent = "for size " + qp.min + " inch";
+    $("qSizes").innerHTML = SIZES.map(function(s){
+      return '<button class="sz" type="button" data-sz="'+s+'" aria-pressed="false"'+(hasSize(qp,s)?'':' disabled')+'>'+s+'</button>';
+    }).join("");
+    $("qAdd").disabled = true; $("qAdd").textContent = "Select a size";
+    $("qNote").textContent = "Available from " + qp.min + " to " + qp.max + " inch. Custom colour and embroidery can be requested on WhatsApp.";
+  } else {
+    $("qSizeBox").style.display = "none";
+    $("qPrice").textContent = rupee(qp.base); $("qPriceNote").textContent = "";
+    $("qAdd").disabled = false; $("qAdd").textContent = "Add to cart";
+    $("qNote").textContent = "Price and availability are confirmed on WhatsApp.";
+  }
+  $("quick").classList.add("open");
+}
+function pickSize(n){
+  qSize = n;
+  Array.prototype.forEach.call($("qSizes").children, function(b){ b.setAttribute("aria-pressed", String(+b.dataset.sz===n)); });
+  $("qPrice").textContent = rupee(priceFor(qp,n)); $("qPriceNote").textContent = "for size " + n + " inch";
+  $("qAdd").disabled = false; $("qAdd").textContent = "Add to cart";
+}
+function addToCart(){
+  var hit = cart.filter(function(c){return c.id===qp.id && c.size===qSize})[0];
+  if(hit) hit.qty += qQty; else cart.push({id:qp.id,size:qSize,qty:qQty});
+  saveCart(); renderCart(); closeAll(); openCart();
+}
+
+/* ---- Cart ---- */
+function subtotal(){ return cart.reduce(function(t,c){return t + priceFor(find(c.id),c.size)*c.qty},0); }
+function sizeLabel(c){ return c.size===null ? "" : "Size " + c.size + " inch"; }
+function orderText(){
+  var sub = subtotal();
+  var lines = cart.map(function(c){var p=find(c.id);return "- "+p.name+(c.size===null?"":" ("+sizeLabel(c)+")")+" x "+c.qty+" = "+rupee(priceFor(p,c.size)*c.qty)});
+  return "Namaste, I would like to order from Nitya Shringar:\n"+lines.join("\n")+"\n\nSubtotal: "+rupee(sub)+"\nDelivery: to be confirmed\nPayment: UPI"+
+    "\n\nName: "+$("cName").value+"\nPhone: "+$("cPhone").value+"\nPincode: "+$("cPin").value+"\nAddress: "+$("cAddr").value;
+}
+function renderCart(){
+  var n = cart.reduce(function(t,c){return t+c.qty},0);
+  $("cartCount").textContent = n;
+  $("upiId").textContent = UPI_ID;
+  if(!cart.length){
+    $("items").innerHTML = '<p class="note" style="padding:24px 0">Your cart is empty. Pick a product to begin.</p>';
+    $("foot").style.display = "none"; return;
+  }
+  $("foot").style.display = "flex";
+  $("items").innerHTML = cart.map(function(c,i){
+    var p = find(c.id), u = priceFor(p,c.size);
+    return '<div class="line"><div class="thumb">'+art(p)+'</div><div><div class="t">'+p.name+'</div><div class="meta">'+(c.size===null?'':sizeLabel(c)+' · ')+rupee(u)+'</div>'+
+      '<div class="qty" style="margin-top:4px"><button type="button" data-dec="'+i+'" aria-label="Decrease">−</button><span>'+c.qty+'</span><button type="button" data-inc="'+i+'" aria-label="Increase">+</button></div></div>'+
+      '<div style="text-align:right"><b>'+rupee(u*c.qty)+'</b><br><button class="rm" type="button" data-rm="'+i+'">Remove</button></div></div>';
+  }).join("");
+  $("sSub").textContent = rupee(subtotal());
+  $("sTot").textContent = rupee(subtotal());
+  updateWa();
+}
+function updateWa(){
+  var a = $("waLink");
+  a.href = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(orderText());
+  var ready = $("cName").value.trim() && $("cPhone").value.trim() && $("cAddr").value.trim();
+  a.setAttribute("aria-disabled", ready ? "false" : "true");
+}
+function openCart(){ $("cart").classList.add("open"); }
+function closeAll(){ $("quick").classList.remove("open"); $("cart").classList.remove("open"); }
+
+/* ---- Events ---- */
+function buildTabs(){ Array.prototype.forEach.call($("tabs").children, function(b){ b.setAttribute("aria-pressed", String(b.dataset.cat===state.cat)); }); }
+document.addEventListener("click", function(e){
+  var t = e.target;
+  var d = t.closest("[data-cat]"); if(d){ state.cat = d.dataset.cat; buildTabs(); renderGrid(); return; }
+  var o = t.closest("[data-open]"); if(o){ openQuick(+o.dataset.open); return; }
+  var s = t.closest("[data-sz]"); if(s && !s.disabled){ pickSize(+s.dataset.sz); return; }
+  var fs = t.closest("[data-size]"); if(fs){ applySize(fs.dataset.size); return; }
+  var inc = t.closest("[data-inc]"); if(inc){ cart[+inc.dataset.inc].qty++; saveCart(); renderCart(); return; }
+  var dec = t.closest("[data-dec]"); if(dec){ var c = cart[+dec.dataset.dec]; c.qty = Math.max(1, c.qty-1); saveCart(); renderCart(); return; }
+  var rm = t.closest("[data-rm]"); if(rm){ cart.splice(+rm.dataset.rm,1); saveCart(); renderCart(); return; }
+  if(t.closest("[data-close]") || t.classList.contains("overlay")){ closeAll(); }
+});
+$("fSize").addEventListener("change", function(e){ state.size = e.target.value; renderGrid(); });
+$("fMat").addEventListener("change", function(e){ state.mat = e.target.value; renderGrid(); });
+$("fSort").addEventListener("change", function(e){ state.sort = e.target.value; renderGrid(); });
+$("q").addEventListener("input", function(e){ state.q = e.target.value; renderGrid(); });
+$("findBtn").addEventListener("click", findSize);
+$("h").addEventListener("keydown", function(e){ if(e.key==="Enter") findSize(); });
+$("finderOut").addEventListener("keydown", function(e){ if(e.key==="Enter" && e.target.dataset.size) applySize(e.target.dataset.size); });
+$("openCart").addEventListener("click", openCart);
+$("qPlus").addEventListener("click", function(){ qQty++; $("qQty").textContent = qQty; });
+$("qMinus").addEventListener("click", function(){ qQty = Math.max(1,qQty-1); $("qQty").textContent = qQty; });
+$("qAdd").addEventListener("click", addToCart);
+["cName","cPhone","cPin","cAddr"].forEach(function(id){ $(id).addEventListener("input", updateWa); });
+$("copyOrder").addEventListener("click", function(){
+  var note = $("copyNote");
+  try{
+    navigator.clipboard.writeText(orderText()).then(function(){ note.textContent = "Order text copied."; }, function(){ note.textContent = "Copy was blocked. Use the WhatsApp button instead."; });
+  }catch(err){ note.textContent = "Copy was blocked. Use the WhatsApp button instead."; }
+});
+document.addEventListener("keydown", function(e){ if(e.key==="Escape") closeAll(); });
+
+buildFilters(); renderGrid(); renderCart();
+</script>
+</body>
+</html>
