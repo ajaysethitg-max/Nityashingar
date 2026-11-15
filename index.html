@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-skin="kesar">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -48,8 +48,11 @@ button{cursor:pointer}
 .announce{background:var(--brand);color:var(--brand-ink);font-size:14px;text-align:center;padding:6px 16px}
 header.top{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
 .bar{display:flex;align-items:center;gap:12px;padding:10px 16px}
-.logo{font-family:var(--display);font-size:22px;color:var(--brand);text-decoration:none;line-height:1}
+.logo{font-family:var(--display);font-size:22px;color:var(--brand);text-decoration:none;line-height:1;display:flex;align-items:center;gap:10px}
+.logo-img{height:40px;width:auto;max-width:130px;object-fit:contain}
+.logo-img[hidden]{display:none}
 .logo small{display:block;font-family:var(--body);font-size:12px;color:var(--muted);letter-spacing:.04em}
+.pill[hidden]{display:none}
 .pill{font-size:11px;font-weight:600;background:var(--accent);color:#2a1d00;border-radius:99px;padding:2px 8px;margin-left:6px;vertical-align:middle}
 .grow{flex:1}
 .search{max-width:360px;width:100%}
@@ -83,6 +86,10 @@ header.top{position:sticky;top:0;z-index:20;background:var(--surface);border-bot
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column}
 .card .art{background:var(--art-bg);aspect-ratio:1/1;display:grid;place-items:center;position:relative;border:0;width:100%;padding:12px}
 .card .art svg{width:80%;height:auto}
+.card .art{overflow:hidden}
+.card .art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.modal .art img{width:100%;height:100%;max-height:420px;object-fit:cover;border-radius:8px}
+.line .thumb img{width:100%;height:56px;object-fit:cover;border-radius:8px}
 .tag{position:absolute;top:8px;left:8px;background:var(--sale);color:#fff;font-size:12px;font-weight:600;border-radius:6px;padding:1px 8px}
 .card .info{padding:10px 12px 12px;display:flex;flex-direction:column;gap:2px;flex:1}
 .card h3{font-family:var(--body);font-weight:600;font-size:16px;line-height:1.3}
@@ -97,7 +104,7 @@ header.top{position:sticky;top:0;z-index:20;background:var(--surface);border-bot
 .usp .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding-top:20px;padding-bottom:20px}
 .usp strong{display:block}
 .usp span{font-size:14px;color:var(--muted)}
-footer{padding:28px 0 90px;color:var(--muted);font-size:14px}
+footer{padding:28px 0 40px;color:var(--muted);font-size:14px}
 footer .wrap{display:grid;grid-template-columns:2fr 1fr 1fr;gap:24px}
 footer h3{font-family:var(--body);font-weight:600;font-size:15px;color:var(--ink);margin-bottom:6px}
 footer p{margin:0 0 4px}
@@ -154,6 +161,7 @@ a.btn[aria-disabled="true"]{opacity:.5;pointer-events:none}
   .modal{grid-template-columns:1fr}
   .modal .art{padding:12px}
   .modal .art svg{width:50%}
+  .modal .art img{max-height:240px}
   .search{display:none}
   .count{margin-left:0;width:100%}
 }
@@ -165,11 +173,11 @@ a.btn[aria-disabled="true"]{opacity:.5;pointer-events:none}
 </head>
 <body>
 
-<div class="announce">Pay by UPI &nbsp;·&nbsp; Delivery by our own team &nbsp;·&nbsp; Poshak sizes from 2 to 20 inches</div>
+<div class="announce" id="announce">Pay by UPI &nbsp;·&nbsp; Delivery by our own team &nbsp;·&nbsp; Poshak sizes from 2 to 20 inches</div>
 
 <header class="top">
   <div class="wrap bar">
-    <a class="logo" href="#top">Nitya Shringar<small>Poshak and shringar for your deities</small></a><span class="pill">Prototype</span>
+    <a class="logo" href="#top"><img id="logoImg" class="logo-img" alt="" hidden><span><span id="shopName">Nitya Shringar</span><small id="shopTag">Poshak and shringar for your deities</small></span></a><span class="pill">Prototype</span>
     <div class="grow"></div>
     <div class="search"><label class="sr" for="q">Search products</label><input id="q" type="search" placeholder="Search poshak, mala, deity"></div>
     <button class="cart-btn" id="openCart" type="button" aria-label="Open cart">Cart <b id="cartCount">0</b></button>
@@ -225,9 +233,9 @@ a.btn[aria-disabled="true"]{opacity:.5;pointer-events:none}
 
 <footer>
   <div class="wrap">
-    <div><h3>Nitya Shringar</h3><p>Dress sets, deities, ornaments, malas and chanting accessories. This is a prototype with sample products and prices.</p></div>
+    <div><h3 id="fName">Nitya Shringar</h3><p>Dress sets, deities, ornaments, malas and chanting accessories. This is a prototype with sample products and prices.</p></div>
     <div><h3>Help</h3><p>Size guide</p><p>Delivery</p><p>Payment by UPI</p></div>
-    <div><h3>Contact</h3><p>WhatsApp: +91 89370 09190</p><p>Address: to be added</p><p>GSTIN: to be added</p></div>
+    <div><h3>Contact</h3><p id="fWa">WhatsApp: +91 70785 29190</p><p id="fAddr">Address: to be added</p><p id="fGst">GSTIN: to be added</p></div>
   </div>
 </footer>
 
@@ -282,7 +290,7 @@ a.btn[aria-disabled="true"]{opacity:.5;pointer-events:none}
 
 <script>
 /* ---- Editable settings and sample data ---- */
-var WHATSAPP = "918937009190";   // replace with the client's WhatsApp number (country code, no +)
+var WHATSAPP = "917078529190";   // replace with the client's WhatsApp number (country code, no +)
 var UPI_ID = "to-be-added@upi";  // replace with the client's UPI ID
 
 /* Dress sizes are in inches, from 2 to 20. */
@@ -291,7 +299,7 @@ var CATS = ["All","Radha Krishna","Hanuman Set","Durga Set","Ganesh & Laxmi","Po
 
 /* Sized products: price = base + (size - min) * step. Single-size products have min = null.
    All names, prices and materials below are samples. */
-var PRODUCTS = [
+var SAMPLE = [
  {id:1, name:"Radha Krishna Velvet Dress Set", cat:"Radha Krishna", kind:"dress", crown:"gold", mat:"Velvet", min:2, max:15, base:299, step:60, c1:"#1f3c88", c2:"#f0a202", pat:"border", tag:"Bestseller", pop:10},
  {id:2, name:"Radha Krishna Zari Silk Set", cat:"Radha Krishna", kind:"dress", crown:"gold", mat:"Zari silk", min:3, max:15, base:449, step:70, c1:"#b3264f", c2:"#ffd166", pat:"dots", tag:"New", pop:8},
  {id:3, name:"Hanuman Ji Saffron Set", cat:"Hanuman Set", kind:"dress", crown:"hanuman", mat:"Cotton", min:2, max:12, base:249, step:55, c1:"#f77f00", c2:"#7a2e00", pat:"plain", tag:"", pop:7},
@@ -310,17 +318,24 @@ var PRODUCTS = [
  {id:16, name:"Chanting Bag", cat:"Chanting Bag & Counter", kind:"bag", mat:"Cotton", min:null, base:199, c1:"#f77f00", c2:"#7a2e00", tag:"", pop:6},
  {id:17, name:"Chanting Counter", cat:"Chanting Bag & Counter", kind:"counter", mat:"Plastic", min:null, base:99, c1:"#0f5560", c2:"#cfe8e4", tag:"", pop:4}
 ];
+var PRODUCTS = SAMPLE.slice();
+
+/* ---- Live products from Google Sheets. Paste the Sheet ID between the quotes; leave empty to show the sample products. ---- */
+var SHEET_ID = "1-28GOq3Ygax-6453ygUbgiV4JqrZSRpfuIlalBV2F24";
+var DATA_READY = !SHEET_ID;
 
 /* ---- Helpers ---- */
+function esc(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
 function $(id){return document.getElementById(id)}
 function rupee(n){return "₹" + n.toLocaleString("en-IN")}
-function find(id){return PRODUCTS.filter(function(p){return p.id===id})[0]}
+function find(id){return PRODUCTS.filter(function(p){return String(p.id)===String(id)})[0]}
 function sized(p){return p.min!==null}
 function hasSize(p,s){return sized(p) && s>=p.min && s<=p.max}
 function priceFor(p,s){return sized(p) ? p.base + ((s===null?p.min:s)-p.min)*p.step : p.base}
 function topPrice(p){return sized(p) ? priceFor(p,p.max) : p.base}
 
 function art(p){
+  if(p.img) return '<img src="'+esc(p.img)+'" alt="'+esc(p.name)+'" data-pid="'+esc(p.id)+'">';
   var o = "", i, t, x, y;
   if(p.kind==="dress"){
     var d = "";
@@ -347,22 +362,23 @@ function art(p){
   } else if(p.kind==="counter"){
     o = '<circle cx="60" cy="84" r="34" fill="none" stroke="'+p.c1+'" stroke-width="12"/><rect x="40" y="26" width="40" height="26" rx="5" fill="'+p.c1+'"/><rect x="45" y="31" width="30" height="16" rx="2" fill="'+p.c2+'"/><text x="60" y="44" text-anchor="middle" font-size="12" font-weight="700" fill="#14262b" font-family="sans-serif">108</text>';
   }
-  return '<svg viewBox="0 0 120 140" role="img" aria-label="'+p.name+'">'+o+'</svg>';
+  return '<svg viewBox="0 0 120 140" role="img" aria-label="'+esc(p.name)+'">'+o+'</svg>';
 }
 
 /* ---- State ---- */
 var state = {cat:"All", size:"all", mat:"all", sort:"pop", q:""};
 var cart = [];
 try{ cart = JSON.parse(localStorage.getItem("nitya-cart")||"[]") || []; }catch(e){ cart = []; }
-cart = cart.filter(function(c){ return find(c.id); });
 function saveCart(){ try{ localStorage.setItem("nitya-cart", JSON.stringify(cart)); }catch(e){} }
 
 /* ---- Filters and grid ---- */
 function buildFilters(){
   $("tabs").innerHTML = CATS.map(function(d){return '<button class="tab" type="button" data-cat="'+d.replace(/&/g,"&amp;")+'" aria-pressed="'+(d===state.cat)+'">'+d.replace(/&/g,"&amp;")+'</button>'}).join("");
   $("fSize").innerHTML = '<option value="all">All sizes</option>' + SIZES.map(function(s){return '<option value="'+s+'">'+s+' inch</option>'}).join("");
-  var mats = []; PRODUCTS.forEach(function(p){ if(mats.indexOf(p.mat)<0) mats.push(p.mat); });
-  $("fMat").innerHTML = '<option value="all">All materials</option>' + mats.map(function(f){return '<option>'+f+'</option>'}).join("");
+  var mats = []; PRODUCTS.forEach(function(p){ if(p.mat && mats.indexOf(p.mat)<0) mats.push(p.mat); });
+  $("fMat").innerHTML = '<option value="all">All materials</option>' + mats.map(function(f){return '<option>'+esc(f)+'</option>'}).join("");
+  if(mats.indexOf(state.mat)<0) state.mat = "all";
+  $("fSize").value = state.size; $("fMat").value = state.mat;
 }
 function renderGrid(){
   var q = state.q.toLowerCase();
@@ -373,15 +389,16 @@ function renderGrid(){
     if(q && (p.name+" "+p.mat+" "+p.cat).toLowerCase().indexOf(q)<0) return false;
     return true;
   });
-  list.sort(function(a,b){ return state.sort==="low" ? a.base-b.base : state.sort==="high" ? b.base-a.base : b.pop-a.pop; });
+  list.sort(function(a,b){ return state.sort==="low" ? a.base-b.base : state.sort==="high" ? b.base-a.base : (b.pop-a.pop) || ((b.created||0)-(a.created||0)); });
   $("count").textContent = list.length + (list.length===1?" product":" products");
   $("grid").innerHTML = list.length ? list.map(function(p){
-    return '<article class="card"><button class="art" type="button" data-open="'+p.id+'" aria-label="View '+p.name+'">'+(p.tag?'<span class="tag">'+p.tag+'</span>':'')+art(p)+'</button>'+
-      '<div class="info"><h3>'+p.name+'</h3><div class="meta">'+p.cat+' · '+p.mat+'</div>'+
+    var out = p.stock===false;
+    return '<article class="card"><button class="art" type="button" data-open="'+esc(p.id)+'" aria-label="View '+esc(p.name)+'">'+((out||p.tag)?'<span class="tag">'+(out?'Sold out':esc(p.tag))+'</span>':'')+art(p)+'</button>'+
+      '<div class="info"><h3>'+esc(p.name)+'</h3><div class="meta">'+esc(p.cat)+(p.mat?' · '+esc(p.mat):'')+'</div>'+
       '<div class="meta">'+(sized(p)?('Sizes '+p.min+' to '+p.max+' inch'):'Single size')+'</div>'+
       '<div class="price"><b>'+rupee(p.base)+'</b>'+(sized(p)?'<span>onwards</span>':'')+'</div>'+
-      '<button class="btn" type="button" data-open="'+p.id+'">'+(sized(p)?'Choose size':'View')+'</button></div></article>';
-  }).join("") : '<div class="empty">No products match these filters. Try another size or category.</div>';
+      (out?'<button class="btn" type="button" disabled>Sold out</button>':'<button class="btn" type="button" data-open="'+esc(p.id)+'">'+(sized(p)?'Choose size':'View')+'</button>')+'</div></article>';
+  }).join("") : '<div class="empty">'+(DATA_READY?'No products match these filters. Try another size or category.':'Loading products…')+'</div>';
 }
 
 /* ---- Size finder ---- */
@@ -401,7 +418,7 @@ var qp = null, qSize = null, qQty = 1;
 function openQuick(id){
   qp = find(id); qSize = null; qQty = 1;
   $("qArt").innerHTML = art(qp); $("qName").textContent = qp.name;
-  $("qMeta").textContent = qp.cat + " · " + qp.mat;
+  $("qMeta").textContent = qp.cat + (qp.mat ? " · " + qp.mat : "");
   $("qQty").textContent = 1;
   if(sized(qp)){
     $("qSizeBox").style.display = "block";
@@ -409,12 +426,12 @@ function openQuick(id){
     $("qSizes").innerHTML = SIZES.map(function(s){
       return '<button class="sz" type="button" data-sz="'+s+'" aria-pressed="false"'+(hasSize(qp,s)?'':' disabled')+'>'+s+'</button>';
     }).join("");
-    $("qAdd").disabled = true; $("qAdd").textContent = "Select a size";
+    $("qAdd").disabled = true; $("qAdd").textContent = qp.stock===false ? "Sold out" : "Select a size";
     $("qNote").textContent = "Available from " + qp.min + " to " + qp.max + " inch. Custom colour and embroidery can be requested on WhatsApp.";
   } else {
     $("qSizeBox").style.display = "none";
     $("qPrice").textContent = rupee(qp.base); $("qPriceNote").textContent = "";
-    $("qAdd").disabled = false; $("qAdd").textContent = "Add to cart";
+    $("qAdd").disabled = qp.stock===false; $("qAdd").textContent = qp.stock===false ? "Sold out" : "Add to cart";
     $("qNote").textContent = "Price and availability are confirmed on WhatsApp.";
   }
   $("quick").classList.add("open");
@@ -423,6 +440,7 @@ function pickSize(n){
   qSize = n;
   Array.prototype.forEach.call($("qSizes").children, function(b){ b.setAttribute("aria-pressed", String(+b.dataset.sz===n)); });
   $("qPrice").textContent = rupee(priceFor(qp,n)); $("qPriceNote").textContent = "for size " + n + " inch";
+  if(qp.stock===false) return;
   $("qAdd").disabled = false; $("qAdd").textContent = "Add to cart";
 }
 function addToCart(){
@@ -444,6 +462,10 @@ function renderCart(){
   var n = cart.reduce(function(t,c){return t+c.qty},0);
   $("cartCount").textContent = n;
   $("upiId").textContent = UPI_ID;
+  if(!DATA_READY){
+    $("items").innerHTML = '<p class="note" style="padding:24px 0">Loading your cart…</p>';
+    $("foot").style.display = "none"; return;
+  }
   if(!cart.length){
     $("items").innerHTML = '<p class="note" style="padding:24px 0">Your cart is empty. Pick a product to begin.</p>';
     $("foot").style.display = "none"; return;
@@ -451,7 +473,7 @@ function renderCart(){
   $("foot").style.display = "flex";
   $("items").innerHTML = cart.map(function(c,i){
     var p = find(c.id), u = priceFor(p,c.size);
-    return '<div class="line"><div class="thumb">'+art(p)+'</div><div><div class="t">'+p.name+'</div><div class="meta">'+(c.size===null?'':sizeLabel(c)+' · ')+rupee(u)+'</div>'+
+    return '<div class="line"><div class="thumb">'+art(p)+'</div><div><div class="t">'+esc(p.name)+'</div><div class="meta">'+(c.size===null?'':sizeLabel(c)+' · ')+rupee(u)+'</div>'+
       '<div class="qty" style="margin-top:4px"><button type="button" data-dec="'+i+'" aria-label="Decrease">−</button><span>'+c.qty+'</span><button type="button" data-inc="'+i+'" aria-label="Increase">+</button></div></div>'+
       '<div style="text-align:right"><b>'+rupee(u*c.qty)+'</b><br><button class="rm" type="button" data-rm="'+i+'">Remove</button></div></div>';
   }).join("");
@@ -473,7 +495,7 @@ function buildTabs(){ Array.prototype.forEach.call($("tabs").children, function(
 document.addEventListener("click", function(e){
   var t = e.target;
   var d = t.closest("[data-cat]"); if(d){ state.cat = d.dataset.cat; buildTabs(); renderGrid(); return; }
-  var o = t.closest("[data-open]"); if(o){ openQuick(+o.dataset.open); return; }
+  var o = t.closest("[data-open]"); if(o){ openQuick(o.dataset.open); return; }
   var s = t.closest("[data-sz]"); if(s && !s.disabled){ pickSize(+s.dataset.sz); return; }
   var fs = t.closest("[data-size]"); if(fs){ applySize(fs.dataset.size); return; }
   var inc = t.closest("[data-inc]"); if(inc){ cart[+inc.dataset.inc].qty++; saveCart(); renderCart(); return; }
@@ -502,15 +524,18 @@ $("copyOrder").addEventListener("click", function(){
 document.addEventListener("keydown", function(e){ if(e.key==="Escape") closeAll(); });
 
 /* ---- Design picker. Links: .../Nityashingar/#kesar, #royal, #minimal, #tulsi, #peacock ---- */
+var SKIN_PICKER = false;   // set to true to show the Design bar again
+var DEFAULT_SKIN = "kesar";
 var SKINS = ["peacock","kesar","royal","minimal","tulsi"];
 function setSkin(name){
-  if(SKINS.indexOf(name)<0) name = "peacock";
+  if(SKINS.indexOf(name)<0) name = DEFAULT_SKIN;
   document.documentElement.setAttribute("data-skin", name);
   Array.prototype.forEach.call(document.querySelectorAll("#skins button"), function(b){ b.setAttribute("aria-pressed", String(b.dataset.skin===name)); });
   try{ localStorage.setItem("nitya-skin", name); }catch(e){}
   try{ history.replaceState(null, "", "#" + name); }catch(e){}
 }
 function startSkin(){
+  if(!SKIN_PICKER){ document.getElementById("skins").style.display = "none"; document.documentElement.setAttribute("data-skin", DEFAULT_SKIN); return; }
   var h = (location.hash||"").replace("#",""), saved = "";
   try{ saved = localStorage.getItem("nitya-skin") || ""; }catch(e){}
   setSkin(SKINS.indexOf(h)>=0 ? h : saved);
@@ -521,7 +546,105 @@ document.getElementById("skins").addEventListener("click", function(e){
 window.addEventListener("hashchange", function(){ var h = location.hash.replace("#",""); if(SKINS.indexOf(h)>=0) setSkin(h); });
 startSkin();
 
-buildFilters(); renderGrid(); renderCart();
+/* ---- Shop details from the admin page (name, logo, WhatsApp, UPI, banner, contact) ---- */
+function applySettings(st){
+  var pl = document.querySelector(".pill"); if(pl) pl.hidden = true;   // live shop: hide the Prototype label
+  if(st.name){ $("shopName").textContent = st.name; $("fName").textContent = st.name; document.title = st.name + " Store"; }
+  if(st.tag){ $("shopTag").textContent = st.tag; }
+  var img = $("logoImg");
+  if(st.logo){
+    img.src = st.logo; img.hidden = false;
+    var ic = document.querySelector('link[rel="icon"]'); if(!ic){ ic = document.createElement("link"); ic.rel = "icon"; document.head.appendChild(ic); } ic.href = st.logo;
+  } else { img.hidden = true; }
+  if(st.wa){ WHATSAPP = st.wa; var n = st.wa.slice(-10); $("fWa").textContent = "WhatsApp: +91 " + n.slice(0,5) + " " + n.slice(5); }
+  if(st.upi){ UPI_ID = st.upi; }
+  if(st.announce){ $("announce").textContent = st.announce; }
+  $("fAddr").hidden = !st.address; if(st.address) $("fAddr").textContent = "Address: " + st.address;
+  $("fGst").hidden = !st.gstin; if(st.gstin) $("fGst").textContent = "GSTIN: " + st.gstin;
+  updateWa(); $("upiId").textContent = UPI_ID;
+}
+
+/* ---- Load products and shop details from Google Sheets ----
+   Sheet tabs: "Products" (one row per product) and "Settings" (key and value rows).
+   The sheet must be shared as "Anyone with the link can view". */
+var KIND = {"Deities":"murti","Ornaments":"ornament","Tulsi Mala":"mala","Rudraksh Mala":"mala","Chanting Bag & Counter":"bag"};
+var COLORS = {"Radha Krishna":["#1f3c88","#f0a202"],"Hanuman Set":["#f77f00","#7a2e00"],"Durga Set":["#c1121f","#f0a202"],"Ganesh & Laxmi":["#2d6a4f","#f0a202"],"Poshak by Size":["#5b2a86","#f6d365"],"Deities":["#d9a441","#8a5a00"],"Ornaments":["#f4efe6","#f0a202"],"Tulsi Mala":["#6b4a2b","#2d6a4f"],"Rudraksh Mala":["#8b5a2b","#3a2500"],"Chanting Bag & Counter":["#f77f00","#7a2e00"]};
+function num(v){ if(typeof v==="number") return v; var n = parseFloat(String(v==null?"":v).replace(/[₹,\s]/g,"")); return isNaN(n) ? null : n; }
+function yes(v){ return v===true || /^(y|yes|true|1)$/i.test(String(v==null?"":v).trim()); }
+function no(v){ return v===false || /^(n|no|false|0)$/i.test(String(v==null?"":v).trim()); }
+function photoUrl(v){
+  v = String(v==null?"":v).trim(); if(!v) return "";
+  var m = v.match(/drive\.google\.com\/file\/d\/([\w-]+)/) || v.match(/drive\.google\.com\/[^\s]*[?&]id=([\w-]+)/);
+  if(m) return "https://drive.google.com/thumbnail?id=" + m[1] + "&sz=w600";
+  if(/^https?:\/\//i.test(v)) return v;
+  return "images/" + encodeURI(v.replace(/^\/+/, ""));
+}
+function key(x){ return String(x==null?"":x).trim().toLowerCase().replace(/\s+/g,"_"); }
+function tableRows(resp){
+  if(!resp || resp.status!=="ok" || !resp.table) throw new Error("bad response");
+  var cols = resp.table.cols.map(function(c){ return key(c.label); });
+  var rows = resp.table.rows.map(function(r){ return (r.c||[]).map(function(c){ return c ? (c.v==null ? "" : c.v) : ""; }); });
+  if(!cols.some(function(c){ return c; })){ cols = (rows.shift()||[]).map(key); }
+  return rows.map(function(r){ var o = {}; cols.forEach(function(k,i){ if(k) o[k] = i<r.length ? r[i] : ""; }); return o; });
+}
+function productsFrom(rows){
+  var seen = {}, out = [];
+  rows.forEach(function(r,i){
+    var name = String(r.name==null?"":r.name).trim(); if(!name || no(r.show)) return;
+    var cat = String(r.category==null?"":r.category).trim() || "Poshak by Size", col = COLORS[cat] || ["#5b2a86","#f6d365"];
+    var mn = num(r.min_size), mx = num(r.max_size), isSized = mn!==null && mn>0;
+    if(isSized && (mx===null || mx<mn)) mx = mn;
+    var id = name.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"") || ("item-"+i);
+    if(seen[id]){ seen[id]++; id += "-" + seen[id]; } else { seen[id] = 1; }
+    out.push({id:id, name:name, cat:cat, kind:KIND[cat]||"dress", crown:cat==="Hanuman Set"?"hanuman":(cat==="Ganesh & Laxmi"?"ganesh":"gold"),
+      mat:String(r.material==null?"":r.material).trim(), min:isSized?mn:null, max:isSized?mx:null, base:num(r.price)||0, step:isSized?(num(r.extra_per_inch)||0):0,
+      c1:col[0], c2:col[1], pat:"border", tag:String(r.label==null?"":r.label).trim(), pop:yes(r.featured)?10:5, img:photoUrl(r.photo), stock:!no(r.in_stock), created:rows.length-i});
+  });
+  return out;
+}
+function settingsFrom(rows){
+  var m = {}; rows.forEach(function(r){ var k = key(r.key); if(k) m[k] = String(r.value==null?"":r.value).trim(); });
+  var wa = (m.whatsapp||"").replace(/\D/g,""); if(wa.length===10) wa = "91"+wa; if(wa.length!==12) wa = "";
+  return {name:m.shop_name||"", tag:m.tagline||"", logo:photoUrl(m.logo), wa:wa, upi:m.upi||"", announce:m.banner||"", address:m.address||"", gstin:(m.gstin||"").toUpperCase()};
+}
+/* Google returns the tab as a script that calls our function, so this works from any website. */
+function fetchTab(tab){
+  return new Promise(function(ok, bad){
+    var cb = "gs_" + Math.random().toString(36).slice(2), s = document.createElement("script"), done = false;
+    function clean(){ try{ delete window[cb]; }catch(e){ window[cb] = undefined; } if(s.parentNode) s.parentNode.removeChild(s); }
+    window[cb] = function(r){ done = true; clean(); ok(r); };
+    s.onerror = function(){ clean(); bad(new Error("load failed")); };
+    s.src = "https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/gviz/tq?headers=1&sheet=" + encodeURIComponent(tab) + "&tqx=out:json;responseHandler:" + cb;
+    document.head.appendChild(s);
+    setTimeout(function(){ if(!done){ clean(); bad(new Error("timeout")); } }, 15000);
+  });
+}
+function applyData(p, st){
+  PRODUCTS = productsFrom(p); DATA_READY = true;
+  cart = cart.filter(function(c){ return find(c.id); }); saveCart();
+  applySettings(settingsFrom(st));
+  buildFilters(); renderGrid(); renderCart();
+}
+function startData(){
+  if(!SHEET_ID) return;
+  var cached = null; try{ cached = JSON.parse(localStorage.getItem("nitya-sheet")||"null"); }catch(e){}
+  if(cached && cached.p && cached.s){ try{ applyData(cached.p, cached.s); }catch(e){} }   // show the last copy at once, then refresh
+  Promise.all([fetchTab("Products"), fetchTab("Settings").catch(function(){ return null; })]).then(function(res){
+    var p = tableRows(res[0]), st = []; try{ st = res[1] ? tableRows(res[1]) : []; }catch(e){}
+    try{ localStorage.setItem("nitya-sheet", JSON.stringify({p:p, s:st})); }catch(e){}
+    applyData(p, st);
+  }).catch(function(){
+    if(!DATA_READY){ DATA_READY = true; $("grid").innerHTML = '<div class="empty">Products could not be loaded. Please refresh the page or message us on WhatsApp.</div>'; renderCart(); }
+  });
+}
+/* If a product photo cannot load, show the drawing instead. A broken logo is hidden. */
+document.addEventListener("error", function(e){
+  var t = e.target; if(!t || t.tagName!=="IMG") return;
+  if(t.id==="logoImg"){ t.hidden = true; return; }
+  if(t.dataset && t.dataset.pid){ var p = find(t.dataset.pid); if(p){ t.outerHTML = art(Object.assign({}, p, {img:""})); } }
+}, true);
+
+buildFilters(); renderGrid(); renderCart(); startData();
 </script>
 </body>
 </html>
